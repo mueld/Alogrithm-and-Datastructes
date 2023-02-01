@@ -1,0 +1,17 @@
+﻿using Bruderer.Core.Domain.Attributes;
+using Bruderer.Core.Domain.Constants;
+using Bruderer.Core.Domain.Models.ModelComponentContainerAggregate;
+using Bruderer.Core.Domain.Models.ModelVariableAggregate;
+using System.ComponentModel;
+
+namespace Bruderer.Core.Domain.Test.TestComponents.Rockets.Components
+{
+    public class SolidRocketBoosterType : ModelComponentContainer
+    {
+        [DisplayName("CurrentFuel")]
+        [Description("CurrentFuel")]
+        [EngineeringUnit(UnitsEnumeration.Kilogram)]
+        [IsReadOnly]
+        public ModelVariable<int> CurrentFuel { get; set; } = new(10000);
+    }
+}
