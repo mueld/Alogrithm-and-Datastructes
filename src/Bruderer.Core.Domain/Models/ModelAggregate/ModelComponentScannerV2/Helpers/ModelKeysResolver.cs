@@ -65,6 +65,9 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
         public override void VisitServiceContainer(PropertyInfo elementProperty, ModelComponentContainer serviceContainer)
         {
             var updatedModelKeys = UpdatedModelKeys(elementProperty, serviceContainer);
+            updatedModelKeys.ServiceName = elementProperty.Name;
+            modelkeys.Push(updatedModelKeys);
+
             
         }
         private ModelScanningKeys UpdatedModelKeys(PropertyInfo elementProperty, ModelComponentContainer serviceContainer)
@@ -74,6 +77,7 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
             updatedModelKeys.ModelKey = BuildModelKey(updatedModelKeys.ModelPath, GetModelName(elementProperty));
             updatedModelKeys.LocalizationNamespace = UpdateLocalizationNamespace(elementProperty, currentKeys.LocalizationNamespace);
             updatedModelKeys.LocalizationPath = BuildLocalizationPath(currentKeys.LocalizationPath, elementProperty);
+            return updatedModelKeys;
         }
         private static string GetModelPath(PropertyInfo elementProperty, string currentPath)
         {
@@ -149,6 +153,47 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
 
                 return (currentPath + seperator + elementProperty.Name).ToLower();
             }
+        }
+        private static void updateMetaData(ModelScanningKeys keys, PropertyInfo elementProperty, ModelComponentContainer container)
+        {
+            container.Description.Value = GetLocalizationDescription(elementProperty);
+            container.Display.Value = GetLocalizationDisplay(elementProperty);
+            container.ModelLink.Path = keys.ModelPath;
+            container.ModelLink.Key = keys.ModelKey;
+            container.ModelLink.Name = GetModelName(elementProperty);
+
+        }
+        private static string GetLocalizationDescription(PropertyInfo elementProperty, bool useTypeAttributes = false)
+        {
+            var elementName = string.Empty; //elementProperty.Name;
+            string attributeDescriptionName = string.Empty;
+
+            // Resolve attribute
+            if (useTypeAttributes)
+                attributeDescriptionName = AttributeResolver.GetDescriptionAttribute(elementProperty.PropertyType);
+            else
+                attributeDescriptionName = AttributeResolver.GetDescriptionAttribute(elementProperty);
+
+            if (!string.IsNullOrEmpty(attributeDescriptionName))
+                elementName = attributeDescriptionName;
+
+            return elementName;
+                }
+        protected static string GetLocalizationDisplay(PropertyInfo elementProperty, bool useTypeAttributes = false)
+        {
+            var elementName = string.Empty; //elementProperty.Name;
+            string attributeDisplayName = string.Empty;
+
+            // Resolve attribute
+            if (useTypeAttributes)
+                attributeDisplayName = AttributeResolver.GetDisplayNameAttribute(elementProperty.PropertyType);
+            else
+                attributeDisplayName = AttributeResolver.GetDisplayNameAttribute(elementProperty);
+
+            if (!string.IsNullOrEmpty(attributeDisplayName))
+                elementName = attributeDisplayName;
+
+            return elementName;
         }
     }
 
