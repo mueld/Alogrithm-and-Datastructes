@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+	  <LangVersion>latest</LangVersion>
+	  <Authors>Bruderer AG</Authors>
+	  <Company>Bruderer AG</Company>
+	  <Description>Contains the infrastructure plc TwinCAT3(Beckhoff) concerns of the core stack.</Description>
+	  <PackageProjectUrl>http://repository.bruderer.ag/projects/NETPAK/repos/bruderer.core/browse</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.0.190" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bruderer.Core.Infrastructure.PLC\Bruderer.Core.Infrastructure.PLC.csproj" />
+  </ItemGroup>
+
+</Project>

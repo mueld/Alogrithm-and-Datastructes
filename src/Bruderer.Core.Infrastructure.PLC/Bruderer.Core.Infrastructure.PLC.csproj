@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<Authors>Bruderer AG</Authors>
+		<Company>Bruderer AG</Company>
+		<Description>Contains the infrastructure plc concerns of the core stack.</Description>
+		<PackageProjectUrl>http://repository.bruderer.ag/projects/NETPAK/repos/bruderer.core/browse</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bruderer.Core.Infrastructure\Bruderer.Core.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+	  <LangVersion>latest</LangVersion>
+	  <Authors>Bruderer AG</Authors>
+	  <Company>Bruderer AG</Company>
+	  <Description>Contains the infrastructure concerns of the core stack.</Description>
+	  <PackageProjectUrl>http://repository.bruderer.ag/projects/NETPAK/repos/bruderer.core/browse</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="10.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bruderer.Core.Domain\Bruderer.Core.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
