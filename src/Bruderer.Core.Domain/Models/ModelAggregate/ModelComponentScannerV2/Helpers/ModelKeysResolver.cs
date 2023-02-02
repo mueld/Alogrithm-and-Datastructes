@@ -17,6 +17,9 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
     {
         private Stack<ModelScanningKeys> modelkeys = new Stack<ModelScanningKeys>();
         private ModelScanningKeys currentKeys = new ModelScanningKeys();
+        private string enumerableBaseModelPath = string.Empty;
+        private string baseLocalizationPath = string.Empty;
+
         public ModelKeysResolver()
         {
             
@@ -47,14 +50,34 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
             PostUpdateModelKeys(elementProperty);
         }
 
-        public override void VisitModelComponentContainerCollection(PropertyInfo elementProperty, IModelComponentContainerCollection variable)
+        public override void VisitModelComponentContainerCollection(PropertyInfo elementProperty, IModelComponentContainerCollection collection)
         {
-            throw new NotImplementedException();
+            UpdatedModelKeys(elementProperty);
+            var collectionCount = (int)elementProperty.PropertyType.GetProperty("Count").GetValue(collection, null);
+            FillEnumerableModelContainerMetaData(elementProperty, collection, collectionCount);
+            enumerableBaseModelPath = GetModelPath(elementProperty, currentKeys.ModelPath);
+            baseLocalizationPath = currentKeys.LocalizationPath;
+            currentKeys = new ModelScanningKeys(currentKeys);
+            modelkeys.Push(currentKeys);
         }
 
-        public override void VisitModelComponentContainerCollectionItem(PropertyInfo elementProperty, ModelComponentContainer serviceContainer, int index)
+        public override void VisitModelComponentContainerCollectionItem(PropertyInfo elementProperty, ModelComponentContainer modelContainer, int index)
         {
-            throw new NotImplementedException();
+            var updatedModelKeys = new ModelScanningKeys(currentKeys);
+            updatedModelKeys.ModelKey = BuildModelPath(enumerableBaseModelPath, currentKeys.ElementName + GetEnumerableString(index + 1));
+            updatedModelKeys.LocalizationNamespace = UpdateLocalizationNamespace(elementProperty, currentKeys.LocalizationNamespace);
+            updatedModelKeys.LocalizationPath = BuildLocalizationPath(currentKeys.LocalizationPath, elementProperty);
+
+            currentKeys = updatedModelKeys;
+            modelkeys.Push(currentKeys);
+
+            FillContainerMetaData(elementProperty, modelContainer);
+
+            modelContainer.EnumerationIndex = index;
+
+
+
+
         }
 
         public override void VisitModelRPC(PropertyInfo elementProperty, ModelRPCBase rpc)
@@ -220,8 +243,9 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
             modelVariableBase.ServiceName = currentKeys.ServiceName;
         }
 
-        private void FillEnumerableModelContainerMetaData(PropertyInfo elementProperty, IModelComponentContainerCollection collectionModelContainer)
+        private void FillEnumerableModelContainerMetaData(PropertyInfo elementProperty, IModelComponentContainerCollection collectionModelContainer, int collectionCount)
         {
+            var modelComponentContainer = collectionModelContainer as ModelComponentContainer;
             collectionModelContainer.ModelLink.Path = currentKeys.ModelPath;
             collectionModelContainer.ModelLink.Name = currentKeys.ElementName;
 
@@ -233,6 +257,10 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
             collectionModelContainer.Description.Link.Name = CoreLocalizationNameConstants.Description;
             collectionModelContainer.Description.KeyNamespace = currentKeys.LocalizationNamespace;
             collectionModelContainer.Description.Value = GetLocalizationDescription(elementProperty);
+
+            modelComponentContainer.IsEnumerable = true;
+            modelComponentContainer.EnumerationCount = collectionCount;
+            modelComponentContainer.EnumerationIndex = -1;
 
             collectionModelContainer.ServiceName = currentKeys.ServiceName;
         }
