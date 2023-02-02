@@ -24,22 +24,27 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
 
         public override void LeaveModelComponentContainer(PropertyInfo elementProperty, ModelComponentContainer modelComponentContainer)
         {
-            
+            modelkeys.Pop();
+            currentKeys = modelkeys.Peek();
         }
 
         public override void LeaveModelComponentContainerCollection(PropertyInfo elementProperty, IModelComponentContainerCollection variable)
         {
-            throw new NotImplementedException();
+            modelkeys.Pop();
+            currentKeys = modelkeys.Peek();
         }
 
         public override void LeaveServiceContainer(PropertyInfo elementProperty, ModelComponentContainer serviceContainer)
         {
-            throw new NotImplementedException();
+            modelkeys.Pop();
+            currentKeys = modelkeys.Peek();
         }
 
         public override void VisitModelComponentContainer(PropertyInfo elementProperty, ModelComponentContainer modelComponentContainer)
         {
-            throw new NotImplementedException();
+            UpdatedModelKeys(elementProperty);
+            FillContainerMetaData(elementProperty, modelComponentContainer);
+            PostUpdateModelKeys(elementProperty);
         }
 
         public override void VisitModelComponentContainerCollection(PropertyInfo elementProperty, IModelComponentContainerCollection variable)
@@ -54,26 +59,29 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
 
         public override void VisitModelRPC(PropertyInfo elementProperty, ModelRPCBase rpc)
         {
-            throw new NotImplementedException();
+            UpdatedModelKeys(elementProperty);
+            FillRPCMetaData(elementProperty, rpc);
+            currentKeys = modelkeys.Peek();
+            
         }
 
         public override void VisitModelVariable(PropertyInfo elementProperty, ModelVariableBase variable)
         {
-            throw new NotImplementedException();
+            UpdatedModelKeys(elementProperty);
+            FillVariableMetaData(elementProperty, variable);
+            currentKeys = modelkeys.Peek();
         }
 
         public override void VisitServiceContainer(PropertyInfo elementProperty, ModelComponentContainer serviceContainer)
         {
-            var updatedModelKeys = UpdatedModelKeys(elementProperty, serviceContainer);
-            modelkeys.Push(updatedModelKeys);
-            updatedModelKeys.ServiceName = elementProperty.Name;
-            currentKeys = updatedModelKeys;
-
-            FillComponentMetaData();
+            UpdatedModelKeys(elementProperty);
+            currentKeys.ServiceName = elementProperty.Name;
+            FillContainerMetaData(elementProperty, serviceContainer);
+            PostUpdateModelKeys(elementProperty);
         }
 
 
-        private ModelScanningKeys UpdatedModelKeys(PropertyInfo elementProperty, ModelComponentContainer serviceContainer)
+        private void UpdatedModelKeys(PropertyInfo elementProperty)
         {
             var updatedModelKeys = new ModelScanningKeys(currentKeys);
             updatedModelKeys.ElementName = GetModelName(elementProperty);
@@ -81,9 +89,22 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
             updatedModelKeys.ModelKey = BuildModelKey(updatedModelKeys.ModelPath, GetModelName(elementProperty));
             updatedModelKeys.LocalizationNamespace = UpdateLocalizationNamespace(elementProperty, currentKeys.LocalizationNamespace);
             updatedModelKeys.LocalizationPath = BuildLocalizationPath(currentKeys.LocalizationPath, elementProperty);
-            return updatedModelKeys;
+            currentKeys =  updatedModelKeys;
         }
         
+        private void PostUpdateModelKeys(PropertyInfo elementProperty)
+        {
+            var updatedModelKeys = new ModelScanningKeys(currentKeys);
+            updatedModelKeys.ModelPath = BuildModelPath(currentKeys.ModelPath, currentKeys.ElementName);
+            modelkeys.Push(updatedModelKeys);
+            currentKeys = updatedModelKeys;
+        }
+
+
+        private  static string GetEnumerableString(int index, string startArray = StringConstants.StartArray, string endArray = StringConstants.EndArray)
+        {
+            return startArray + index.ToString() + endArray;
+        }
         private static string GetModelPath(PropertyInfo elementProperty, string currentPath)
         {
             var modelPath = AttributeResolver.GetModePathAttribute(elementProperty);
@@ -108,14 +129,14 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
             return modelName;
         }
 
-        private static string BuildModelPath(string currentPath, string key ,string seperator = StringConstants.Separator)
+        private static string BuildModelPath(string currentPath, string elementName ,string seperator = StringConstants.Separator)
         {
             if (string.IsNullOrEmpty(currentPath))
-                return key;
-            if (string.IsNullOrEmpty(key))
+                return elementName;
+            if (string.IsNullOrEmpty(elementName))
                 return currentPath;
 
-            return currentPath + seperator + key;
+            return currentPath + seperator + elementName;
         }
 
 
@@ -164,8 +185,6 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
         private void FillContainerMetaData(PropertyInfo elementProperty, ModelComponentContainer container)
         {
             container.ModelId = currentKeys.ModelId;
-            container.Description.Value = GetLocalizationDescription(elementProperty);
-            container.Display.Value = GetLocalizationDisplay(elementProperty);
 
             container.ModelLink.Path = currentKeys.ModelPath;
             container.ModelLink.Name = currentKeys.ElementName;
