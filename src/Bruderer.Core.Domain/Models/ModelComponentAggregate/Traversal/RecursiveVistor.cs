@@ -17,5 +17,6 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
         public abstract void LeaveServiceContainer(PropertyInfo elementProperty, ModelComponentContainer serviceContainer);
         public abstract void LeaveModelComponentContainer(PropertyInfo elementProperty, ModelComponentContainer modelComponentContainer);
         public abstract void LeaveModelComponentContainerCollection(PropertyInfo elementProperty, IModelComponentContainerCollection variable);
+        public abstract void LeaveModelComponentContainerCollectionItem(PropertyInfo elementProperty, ModelComponentContainer modelContainer, int index);
     }
 }

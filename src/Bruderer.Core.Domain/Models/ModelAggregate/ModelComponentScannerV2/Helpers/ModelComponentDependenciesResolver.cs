@@ -11,8 +11,27 @@ using System.Threading.Tasks;
 
 namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Helpers
 {
-    public class ModelComponentDependenciesResolver : VisitorSimple
+    public class ModelComponentDependenciesResolver : RecursiveVistor
     {
+        public override void LeaveModelComponentContainer(PropertyInfo elementProperty, ModelComponentContainer modelComponentContainer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void LeaveModelComponentContainerCollection(PropertyInfo elementProperty, IModelComponentContainerCollection variable)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void LeaveModelComponentContainerCollectionItem(PropertyInfo elementProperty, ModelComponentContainer modelContainer, int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void LeaveServiceContainer(PropertyInfo elementProperty, ModelComponentContainer serviceContainer)
+        {
+            throw new NotImplementedException();
+        }
 
         public override void VisitModelComponentContainer(PropertyInfo elementProperty, ModelComponentContainer modelComponentContainer)
         {

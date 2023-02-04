@@ -20,7 +20,7 @@ namespace Bruderer.Core.Domain.Test.Model
             var modelTraversal = new ModelComponentTraversal();
             var visitor = new ModelTraversalTestVisitor();
             
-            modelTraversal.PreOrder(testModel, visitor);
+            modelTraversal.TraversePreOrder(testModel, visitor);
            
             Assert.Equal(16, visitor.Variables.Count);
             Assert.Equal(4, visitor.ServiceContainer.Count);
@@ -29,7 +29,7 @@ namespace Bruderer.Core.Domain.Test.Model
             Assert.Equal(4, visitor.RPCs.Count);
 
             visitor = new ModelTraversalTestVisitor();
-            modelTraversal.PreOrder(testModel, visitor, visitor);
+            modelTraversal.TraversePreOrder(testModel, visitor, visitor);
             Assert.Empty(visitor.Variables);
             Assert.Empty(visitor.ServiceContainer);
             Assert.Empty(visitor.RPCs);

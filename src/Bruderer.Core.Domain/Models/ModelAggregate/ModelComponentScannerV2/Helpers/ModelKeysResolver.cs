@@ -6,10 +6,7 @@ using Bruderer.Core.Domain.Models.ModelRPCAggregate;
 using Bruderer.Core.Domain.Models.ModelVariableAggregate;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Helpers
 {
@@ -20,9 +17,23 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
         private string enumerableBaseModelPath = string.Empty;
         private string baseLocalizationPath = string.Empty;
 
-        public ModelKeysResolver()
+        public ModelKeysResolver() {
+        currentKeys = new ModelScanningKeys();
+            modelkeys.Push(currentKeys); 
+        }
+
+
+
+        public ModelKeysResolver(ModelComponentContainer rootNode)
         {
-            
+            var rootNodeMetaData = new ModelScanningKeys();
+            rootNodeMetaData.ModelPath = rootNode.ModelLink.Path;
+            rootNodeMetaData.ModelKey = rootNode.ModelLink.Key;
+            rootNodeMetaData.ServiceName = rootNode.ServiceName;
+            rootNodeMetaData.ElementName = rootNode.ModelLink.Name;
+            rootNodeMetaData.LocalizationPath = rootNode.Description.Link.Path;
+            currentKeys = rootNodeMetaData;
+            modelkeys.Push(currentKeys);
         }
 
         public override void LeaveModelComponentContainer(PropertyInfo elementProperty, ModelComponentContainer modelComponentContainer)
@@ -32,6 +43,12 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
         }
 
         public override void LeaveModelComponentContainerCollection(PropertyInfo elementProperty, IModelComponentContainerCollection variable)
+        {
+            modelkeys.Pop();
+            currentKeys = modelkeys.Peek();
+        }
+        
+        public override void LeaveModelComponentContainerCollectionItem(PropertyInfo elementProperty, ModelComponentContainer modelContainer, int index)
         {
             modelkeys.Pop();
             currentKeys = modelkeys.Peek();
@@ -54,19 +71,19 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
         {
             UpdatedModelKeys(elementProperty);
             var collectionCount = (int)elementProperty.PropertyType.GetProperty("Count").GetValue(collection, null);
-            FillEnumerableModelContainerMetaData(elementProperty, collection, collectionCount);
+            //FillEnumerableModelContainerMetaData(elementProperty, collection, collectionCount);
             enumerableBaseModelPath = GetModelPath(elementProperty, currentKeys.ModelPath);
             baseLocalizationPath = currentKeys.LocalizationPath;
-            currentKeys = new ModelScanningKeys(currentKeys);
             modelkeys.Push(currentKeys);
         }
 
         public override void VisitModelComponentContainerCollectionItem(PropertyInfo elementProperty, ModelComponentContainer modelContainer, int index)
         {
             var updatedModelKeys = new ModelScanningKeys(currentKeys);
-            updatedModelKeys.ModelKey = BuildModelPath(enumerableBaseModelPath, currentKeys.ElementName + GetEnumerableString(index + 1));
-            updatedModelKeys.LocalizationNamespace = UpdateLocalizationNamespace(elementProperty, currentKeys.LocalizationNamespace);
-            updatedModelKeys.LocalizationPath = BuildLocalizationPath(currentKeys.LocalizationPath, elementProperty);
+            updatedModelKeys.ElementName = currentKeys.ElementName + GetEnumerableString(index + 1);
+            updatedModelKeys.ModelKey = BuildModelPath(enumerableBaseModelPath, updatedModelKeys.ElementName);
+            //updatedModelKeys.LocalizationNamespace = UpdateLocalizationNamespace(elementProperty, currentKeys.LocalizationNamespace);
+            //updatedModelKeys.LocalizationPath = BuildLocalizationPath(currentKeys.LocalizationPath, elementProperty);
 
             currentKeys = updatedModelKeys;
             modelkeys.Push(currentKeys);
@@ -74,10 +91,7 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
             FillContainerMetaData(elementProperty, modelContainer);
 
             modelContainer.EnumerationIndex = index;
-
-
-
-
+            currentKeys.ModelPath = currentKeys.ModelKey;
         }
 
         public override void VisitModelRPC(PropertyInfo elementProperty, ModelRPCBase rpc)
@@ -245,7 +259,7 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
 
         private void FillEnumerableModelContainerMetaData(PropertyInfo elementProperty, IModelComponentContainerCollection collectionModelContainer, int collectionCount)
         {
-            var modelComponentContainer = collectionModelContainer as ModelComponentContainer;
+            
             collectionModelContainer.ModelLink.Path = currentKeys.ModelPath;
             collectionModelContainer.ModelLink.Name = currentKeys.ElementName;
 
@@ -258,9 +272,11 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
             collectionModelContainer.Description.KeyNamespace = currentKeys.LocalizationNamespace;
             collectionModelContainer.Description.Value = GetLocalizationDescription(elementProperty);
 
-            modelComponentContainer.IsEnumerable = true;
-            modelComponentContainer.EnumerationCount = collectionCount;
-            modelComponentContainer.EnumerationIndex = -1;
+
+            var modelContainer = collectionModelContainer as IModelComponentContainer;
+            modelContainer.IsEnumerable = true;
+            modelContainer.EnumerationCount = collectionCount;
+            modelContainer.EnumerationIndex = -1;
 
             collectionModelContainer.ServiceName = currentKeys.ServiceName;
         }
@@ -317,7 +333,8 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
 
             return elementName;
         }
-        
+
+       
     }
 
     internal class ModelScanningKeys
@@ -327,6 +344,7 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
         public ModelScanningKeys(ModelScanningKeys keys)
         {
             ModelId = keys.ModelId;
+            ElementName = keys.ElementName;
             ModelPath = keys.ModelPath;
             LocalizationPath = keys.LocalizationPath;
             ServiceName = keys.ServiceName;

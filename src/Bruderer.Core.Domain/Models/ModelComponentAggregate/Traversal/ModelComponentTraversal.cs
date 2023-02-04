@@ -18,8 +18,12 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
         /// </summary>
         /// <param name = "modelComponent" > model component to traverse </param>
         /// /// <param name = "visitor" > vistor </param>
-        public void PreOrder(object modelComponent, Visitor visitor)
+        public void TraversePreOrder(object modelComponent, Visitor visitor)
         {
+            // Is needed to visit root node
+            //var wrappObject = new WrapObject(modelComponent);
+            //VisitRootNode(wrappObject, visitor);
+
             PreOrder(modelComponent, visitor, new ProxyTraversalCondition());
         }
 
@@ -29,7 +33,54 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
         /// <param name = "modelComponent" > model component to traverse </param>
         /// <param name = "visitor" > vistor </param>
         /// <param name = "condition" > Condition to determine whether the subsequent node should be traversed. Will be invoked for the corresponding type of the node befor its visit </param>
-        public void PreOrder(object modelComponent, Visitor vis, ITraversalCondition condition)
+        public void TraversePreOrder(object modelComponent, Visitor vis, ITraversalCondition condition)
+        {
+            // Is needed to visit root node
+            //var wrappObject = new WrapObject(modelComponent);
+            //VisitRootNode(wrappObject, vis);
+
+            PreOrder(modelComponent, vis, condition);
+        }
+
+
+        /// <summary>
+        /// Traverse passed object by preorder. 
+        /// </summary>
+        /// <param name = "modelComponent" > model component to traverse </param>
+        /// /// <param name = "visitor" > vistor </param>
+        public void TraversePreOrder(object modelComponent, RecursiveVistor visitor)
+        {
+            // Is needed to visit root node
+            //var wrappObject = new WrapObject(modelComponent);
+            //VisitRootNode(wrappObject, visitor);
+
+            PreOrder(modelComponent, visitor, new ProxyTraversalCondition());
+        }
+
+        /// <summary>
+        /// traverses the passed object , using <typeparamref name="ITraversalCondition"/>  to determine whether the subsequent node should be traversed.
+        /// </summary>
+        /// <param name = "modelComponent" > model component to traverse </param>
+        /// <param name = "visitor" > vistor </param>
+        /// <param name = "condition" > Condition to determine whether the subsequent node should be traversed. Will be invoked for the corresponding type of the node befor its visit </param>
+        public void TraversePreOrder(object modelComponent, RecursiveVistor vis, ITraversalCondition condition)
+        {
+            // Is needed to visit root node
+            //var wrappObject = new WrapObject(modelComponent);
+            //VisitRootNode(wrappObject, vis);
+
+
+            PreOrder(modelComponent, vis, condition);
+        }
+
+
+        /// <summary>
+        /// traverses the passed object , using <typeparamref name="ITraversalCondition"/>  to determine whether the subsequent node should be traversed.
+        /// </summary>
+        /// <param name = "modelComponent" > model component to traverse </param>
+        /// <param name = "visitor" > vistor </param>
+        /// <param name = "condition" > Condition to determine whether the subsequent node should be traversed. Will be invoked for the corresponding type of the node befor its visit </param>
+        private void PreOrder(object modelComponent, Visitor vis, ITraversalCondition condition)
         {
             var elementType = modelComponent.GetType();
             var elementProperties = elementType.GetProperties();
@@ -109,7 +160,7 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
         /// <param name = "modelComponent" > model component to traverse </param>
         /// <param name = "visitor" > visitor that needs recursive behavior </param>
         /// <param name = "condition" > Condition to determine whether the subsequent node should be traversed. Will be invoked for the corresponding type of the node befor its visit </param>
-        public void PreOrder(object modelComponent, RecursiveVistor vis, ITraversalCondition condition)
+        private void PreOrder(object modelComponent, RecursiveVistor vis, ITraversalCondition condition)
         {
             var elementType = modelComponent.GetType();
             var elementProperties = elementType.GetProperties();
@@ -186,6 +237,33 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
             }
         }
 
+        private void VisitRootNode(WrapObject rootNode, Visitor vis)
+        {
+            var elementType = rootNode.GetType();
+            var elementProperties = elementType.GetProperties();
+
+                var elementProperty = elementProperties[0];
+                var elementPropertyValueType = rootNode.Element.GetType();
+
+                var implementedInterfaces = elementPropertyValueType.GetInterfaces();
+                
+                if (elementPropertyValueType.GetInterfaces().Contains(typeof(IModelComponentContainer)))
+                {
+                    var modelcomponent = (ModelComponent)rootNode.Element;
+                    ModelComponentContainer modelComponentContainer = modelcomponent as ModelComponentContainer;
+
+                    if (implementedInterfaces.Contains(typeof(IServiceModelContainer)))
+                    {
+                        vis.VisitServiceContainer(elementProperty, modelComponentContainer);
+                    }
+                    else
+                    {
+                        vis.VisitModelComponentContainer(elementProperty, modelComponentContainer);
+                    }
+                }
+        }
+
+
         private object GetPropertyValue(object parentElement, PropertyInfo elementProperty, object[] index = null)
         {
             object elementPropertyValue = null;
@@ -258,8 +336,45 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
                 }
             }
         }
+
+        private void TraverseModelCompontContainerCollection(PropertyInfo elementProperty, object elementValue, RecursiveVistor vis, ITraversalCondition condition)
+        {
+            var collection = elementValue as IModelComponentContainerCollection;
+
+            vis.VisitModelComponentContainerCollection(elementProperty, collection);
+
+            // Resolve "Count" prop of the collection
+            int collectionCount = collection.Count;
+            var collectionItemProperty = elementProperty.PropertyType.GetProperty("Item");
+            for (int collectionIndex = 0; collectionIndex < collectionCount; collectionIndex++)
+            {
+                // Get the collection item
+                
+                object[] index = { collectionIndex };
+                object collectionItem = elementProperty.PropertyType.GetProperty("Item").GetValue(elementValue, index);
+                var collectionItemType = collectionItem.GetType();
+
+                if (collectionItemType.GetInterfaces().Contains(typeof(IModelComponentContainer)))
+                {
+                    vis.VisitModelComponentContainerCollectionItem(collectionItemProperty, collectionItem as ModelComponentContainer, collectionIndex);
+                    PreOrder(collectionItem, vis, condition);
+                    vis.LeaveModelComponentContainerCollectionItem(collectionItemProperty, collectionItem as ModelComponentContainer, collectionIndex);
+                }
+            }
+
+        }
+
     }
 
+    internal class WrapObject
+    {
+        public WrapObject(object element)
+        {
+            Element = element;
+        }
+
+        public object Element { get; set; }
+    }
     internal class ProxyTraversalCondition : ITraversalCondition
     {
         public bool TraverseContainerModelComponentContainer(PropertyInfo elementProperty, ModelComponentContainer container)
