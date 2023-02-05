@@ -119,25 +119,25 @@ namespace Bruderer.Core.Domain.Test.Model.Traversal
 
             modelTraversal.TraversePreOrder(testModel, visitor);
 
-            Assert.Equal($"Service1.Childreens.Items.PLCVersion.Description", testModel.Service1.Childreens[0].PLCVersion.Description.Value);
-            Assert.Equal($"Service1.Childreens.Items.IsEnabled.Description", testModel.Service1.Childreens[0].IsEnabled.Description.Value);
-            Assert.Equal($"Service1.Childreens.Items.IsMuted.Description", testModel.Service1.Childreens[0].IsMuted.Description.Value);
-            Assert.Equal($"Service1.Childreens.Items.TestRPC.Description", testModel.Service1.Childreens[0].TestRPC.Description.Value);
+            Assert.Equal($"service1.childreens.item.plcversion.description".ToLower(), testModel.Service1.Childreens[0].PLCVersion.Description.Link.Key);
+            Assert.Equal($"service1.childreens.item.Isenabled.description".ToLower(), testModel.Service1.Childreens[0].IsEnabled.Description.Link.Key);
+            Assert.Equal($"service1.childreens.item.IsMuted.description".ToLower(), testModel.Service1.Childreens[0].IsMuted.Description.Link.Key);
+            Assert.Equal($"service1.childreens.item.TestRPC.description".ToLower(), testModel.Service1.Childreens[0].TestRPC.Description.Link.Key);
 
-            Assert.Equal($"Service2.Childreens.Items.PLCVersion.Description", testModel.Service2.Childreens[0].PLCVersion.Description.Value);
-            Assert.Equal($"Service2.Childreens.Items.IsEnabled.Description", testModel.Service2.Childreens[0].IsEnabled.Description.Value);
-            Assert.Equal($"Service2.Childreens.Items.IsMuted.Description", testModel.Service2.Childreens[0].IsMuted.Description.Value);
-            Assert.Equal($"Service2.Childreens.Items.TestRPC.Description", testModel.Service2.Childreens[0].TestRPC.Description.Value);
+            Assert.Equal($"Service2.Childreens.item.plcversion.description".ToLower(), testModel.Service2.Childreens[0].PLCVersion.Description.Link.Key);
+            Assert.Equal($"Service2.Childreens.item.IsEnabled.description".ToLower(), testModel.Service2.Childreens[0].IsEnabled.Description.Link.Key);
+            Assert.Equal($"Service2.Childreens.item.IsMuted.description".ToLower(), testModel.Service2.Childreens[0].IsMuted.Description.Link.Key);
+            Assert.Equal($"Service2.Childreens.item.TestRPC.description".ToLower(), testModel.Service2.Childreens[0].TestRPC.Description.Link.Key);
 
-            Assert.Equal($"Service1.State", testModel.Service1.State.ModelLink.Key);
+            Assert.Equal($"Service1.State.description".ToLower(), testModel.Service1.State.Description.Link.Key);
 
-            Assert.Equal($"Service2.ChildService.Childreens.Items.PLCVersion.Description", testModel.Service2.ChildService.Childreens[1].PLCVersion.Description.Value);
-            Assert.Equal($"Service2.ChildService.Childreens.Items.IsEnabled.Description", testModel.Service2.ChildService.Childreens[1].IsEnabled.Description.Value);
-            Assert.Equal($"Service2.ChildService.Childreens.Items.IsMuted.Description", testModel.Service2.ChildService.Childreens[1].IsMuted.Description.Value);
-            Assert.Equal($"Service2.ChildService.Childreens.Items.TestRPC.Description", testModel.Service2.ChildService.Childreens[1].TestRPC.Description.Value);
+            Assert.Equal($"Service2.ChildService.Childreens.item.PLCVersion.description".ToLower(), testModel.Service2.ChildService.Childreens[1].PLCVersion.Description.Link.Key);
+            Assert.Equal($"Service2.ChildService.Childreens.item.IsEnabled.description".ToLower(), testModel.Service2.ChildService.Childreens[1].IsEnabled.Description.Link.Key);
+            Assert.Equal($"Service2.ChildService.Childreens.item.IsMuted.description".ToLower(), testModel.Service2.ChildService.Childreens[1].IsMuted.Description.Link.Key);
+            Assert.Equal($"Service2.ChildService.Childreens.item.TestRPC.description".ToLower(), testModel.Service2.ChildService.Childreens[1].TestRPC.Description.Link.Key);
 
 
-            Assert.Equal($"Service2.State", testModel.Service2.State.ModelLink.Key);
+            Assert.Equal($"Service2.State.description".ToLower(), testModel.Service2.State.Description.Link.Key);
 
         }
 

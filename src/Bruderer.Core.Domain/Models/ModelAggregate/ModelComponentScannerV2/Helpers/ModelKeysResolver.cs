@@ -83,7 +83,7 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
             updatedModelKeys.ElementName = currentKeys.ElementName + GetEnumerableString(index + 1);
             updatedModelKeys.ModelKey = BuildModelPath(enumerableBaseModelPath, updatedModelKeys.ElementName);
             //updatedModelKeys.LocalizationNamespace = UpdateLocalizationNamespace(elementProperty, currentKeys.LocalizationNamespace);
-            //updatedModelKeys.LocalizationPath = BuildLocalizationPath(currentKeys.LocalizationPath, elementProperty);
+            updatedModelKeys.LocalizationPath = BuildLocalizationPath(currentKeys.LocalizationPath, elementProperty);
 
             currentKeys = updatedModelKeys;
             modelkeys.Push(currentKeys);
@@ -210,11 +210,6 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
             }
             else
             {
-                // Special case when scanning option "ModelComponentScanner.WrapSourceObject" is activated
-                // Building for the localization key will then be skipped. This assumes that a path for the localization is already given when the scan process is started.
-                if (elementProperty.Name == nameof(ScanningWrapperElement.ProxyElement))
-                    return (currentPath).ToLower();
-
                 return (currentPath + seperator + elementProperty.Name).ToLower();
             }
         }
@@ -245,11 +240,11 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
             modelVariableBase.ModelLink.Path = currentKeys.ModelPath;
             modelVariableBase.ModelLink.Name = currentKeys.ElementName;
 
-            modelVariableBase.Display.Link.Path = BuildLocalizationPath(currentKeys.LocalizationPath, elementProperty);
+            modelVariableBase.Display.Link.Path = currentKeys.LocalizationPath;
             modelVariableBase.Display.Link.Name = CoreLocalizationNameConstants.DisplayName;
             modelVariableBase.Display.KeyNamespace = currentKeys.LocalizationNamespace;
             modelVariableBase.Display.Value = GetLocalizationDisplay(elementProperty);
-            modelVariableBase.Description.Link.Path = BuildLocalizationPath(currentKeys.LocalizationPath, elementProperty);
+            modelVariableBase.Description.Link.Path = currentKeys.LocalizationPath;
             modelVariableBase.Description.Link.Name = CoreLocalizationNameConstants.Description;
             modelVariableBase.Description.KeyNamespace = currentKeys.LocalizationNamespace;
             modelVariableBase.Description.Value = GetLocalizationDescription(elementProperty);
