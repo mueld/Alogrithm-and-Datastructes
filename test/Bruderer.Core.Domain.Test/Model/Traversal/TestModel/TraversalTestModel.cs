@@ -13,7 +13,10 @@ namespace Bruderer.Core.Domain.Test.Model.Traversal.TestModel
 {
     public  class TraversalTestModel : ModelComponentContainer
     {
+        [TwinCAT3SamplingRate("TraversalTestModel", ModelVariableSamplingRateEnumeration.ms50)]
         public TraversalTestModelServiceChild Service1 { get; set; } = new();
+
+        [TwinCAT3SamplingRate("TraversalTestModel", ModelVariableSamplingRateEnumeration.ms1000)]
         public TraversalTestModelServiceChild Service2 { get; set; } = new();
     }
 
@@ -22,6 +25,7 @@ namespace Bruderer.Core.Domain.Test.Model.Traversal.TestModel
         public ModelVariable<ushort> PLCVersion { get; set; } = new ModelVariable<ushort>();
         public ModelVariable<bool> IsMuted { get; set; } = new ModelVariable<bool>();
 
+        [TwinCAT3SamplingRate("TraversalTestModel", ModelVariableSamplingRateEnumeration.ms200)]
         public ModelComponentContainerCollection<TraversalTestModelChild> Childreens { get; set; } = new ModelComponentContainerCollection<TraversalTestModelChild>(5);
 
         public ModelVariable<bool> State { get; set; } = new ModelVariable<bool>();

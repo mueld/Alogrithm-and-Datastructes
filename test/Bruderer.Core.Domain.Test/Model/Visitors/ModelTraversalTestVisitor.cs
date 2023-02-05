@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bruderer.Core.Domain.Test.Model.Traversal
+namespace Bruderer.Core.Domain.Test.Model.Visitors
 {
     internal class ModelTraversalTestVisitor : Visitor, ITraversalCondition
     {
@@ -30,7 +30,7 @@ namespace Bruderer.Core.Domain.Test.Model.Traversal
 
         public override void VisitModelComponentContainerCollection(PropertyInfo elementProperty, IModelComponentContainerCollection variable)
         {
-            
+
         }
         public override void VisitModelComponentContainerCollectionItem(PropertyInfo elementProperty, ModelComponentContainer serviceContainer, int index)
         {

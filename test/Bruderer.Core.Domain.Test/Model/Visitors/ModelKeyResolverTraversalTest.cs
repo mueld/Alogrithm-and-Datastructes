@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Bruderer.Core.Domain.Test.Model.Traversal
+namespace Bruderer.Core.Domain.Test.Model.Visitors
 {
     public class ModelKeyResolverTraversalTest
     {

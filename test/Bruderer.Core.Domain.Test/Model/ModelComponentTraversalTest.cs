@@ -1,6 +1,7 @@
 ﻿using Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal;
 using Bruderer.Core.Domain.Test.Model.TestModel;
 using Bruderer.Core.Domain.Test.Model.Traversal;
+using Bruderer.Core.Domain.Test.Model.Visitors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
