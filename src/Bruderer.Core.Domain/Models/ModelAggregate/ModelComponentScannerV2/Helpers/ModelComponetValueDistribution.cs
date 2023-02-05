@@ -4,43 +4,72 @@ using Bruderer.Core.Domain.Models.ModelRPCAggregate;
 using Bruderer.Core.Domain.Models.ModelVariableAggregate;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Helpers
 {
     public class ModelComponetValueDistribution : Visitor
     {
+        private Queue<IModelVariable> _ModelVariablesToDistribute;
+        private int _ProccessingIndex;
+        private IModelVariable _NextModelVariable;
+        private bool _AllVariablesAreDistributed;
+
+
+        public ModelComponetValueDistribution(List<IModelVariable> modelVariablesToDistribute)
+        {
+            modelVariablesToDistribute.Sort((IModelVariable x, IModelVariable y) => { return x.ScanningIndex.CompareTo(y.ScanningIndex); });
+
+
+            _ModelVariablesToDistribute = new Queue<IModelVariable>(modelVariablesToDistribute);
+            _NextModelVariable= _ModelVariablesToDistribute.Dequeue();
+        }
         public override void VisitModelComponentContainer(PropertyInfo elementProperty, ModelComponentContainer modelComponentContainer)
         {
-            throw new NotImplementedException();
+            
         }
 
         public override void VisitModelComponentContainerCollection(PropertyInfo elementProperty, IModelComponentContainerCollection variable)
         {
-            throw new NotImplementedException();
+            
         }
 
         public override void VisitModelComponentContainerCollectionItem(PropertyInfo elementProperty, ModelComponentContainer serviceContainer, int index)
         {
-            throw new NotImplementedException();
+            
         }
 
         public override void VisitModelRPC(PropertyInfo elementProperty, ModelRPCBase rpc)
         {
-            throw new NotImplementedException();
+            
         }
 
         public override void VisitModelVariable(PropertyInfo elementProperty, ModelVariableBase variable)
         {
-            throw new NotImplementedException();
+            _ProccessingIndex++;
+
+            if (_AllVariablesAreDistributed)
+                return;
+
+            if(_ProccessingIndex == _NextModelVariable.ScanningIndex)
+            {
+                variable.Take(_NextModelVariable);
+                if(_ModelVariablesToDistribute.Count > 0)
+                {
+                    _NextModelVariable = _ModelVariablesToDistribute.Dequeue();
+                }
+                else
+                {
+                    _AllVariablesAreDistributed = true;
+                }
+                
+            }
         }
 
         public override void VisitServiceContainer(PropertyInfo elementProperty, ModelComponentContainer serviceContainer)
         {
-            throw new NotImplementedException();
+            
         }
     }
+
 }
