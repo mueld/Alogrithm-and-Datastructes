@@ -23,7 +23,7 @@ namespace Bruderer.Core.Domain.Test.Model.Visitors
 
             modelTraversal.TraversePreOrder(testModel, visitor);
             var childreenNumber = 1;
-            Assert.Equal($"Service1.Childreens[{childreenNumber}].PLCVersion.".ToUpper(), testModel.Service1.Childreens[0].PLCVersion.TwinCAT3Links[0].SymbolKey.Key);
+            Assert.Equal($"Service1.Childreens[{childreenNumber}].PLCVersion".ToUpper(), testModel.Service1.Childreens[0].PLCVersion.TwinCAT3Links[0].SymbolKey.Key);
             Assert.Equal($"Service1.Childreens[{childreenNumber}].IsEnabled".ToUpper(), testModel.Service1.Childreens[0].IsEnabled.TwinCAT3Links[0].SymbolKey.Key);
             Assert.Equal($"Service1.Childreens[{childreenNumber}].IsMuted".ToUpper(), testModel.Service1.Childreens[0].IsMuted.TwinCAT3Links[0].SymbolKey.Key);
             Assert.Equal($"Service1.Childreens[{childreenNumber}].TestRPC".ToUpper(), testModel.Service1.Childreens[0].TestRPC.TwinCAT3Links[0].SymbolKey.Key);

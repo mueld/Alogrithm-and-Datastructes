@@ -89,14 +89,14 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
 
         public override void VisitModelComponentContainerCollectionItem(PropertyInfo elementProperty, ModelComponentContainer serviceContainer, int index)
         {
+            var collectionName = _CurrentMetaData.ElementName;
             var metadata = UpdateMetaData(elementProperty);
-
             metadata.ElementName = collectionName + GetEnumerableString(index + 1);
 
             var twincat3Link = GetModelTwinCAT3LinkFromMetaData(metadata);
             serviceContainer.TwinCAT3Links.Add(twincat3Link);
             _CurrentMetaData = metadata;
-            _CurrentMetaData.SymbolPath = BuildModelPath(metadata.SymbolPath, metadata.ElementName, string.Empty);
+            _CurrentMetaData.SymbolPath = BuildModelPath(metadata.SymbolPath, GetEnumerableString(index + 1), string.Empty);
             _MetaDataStack.Push(_CurrentMetaData);
         }
 
