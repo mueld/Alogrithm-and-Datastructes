@@ -112,27 +112,43 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
                     var modelcomponent = (ModelComponent)elementPropertyValue;
                     ModelComponentContainer modelComponentContainer = modelcomponent as ModelComponentContainer;
 
-                    if(implementedInterfaces.Contains(typeof(IServiceModelContainer)))
+                    if (implementedInterfaces.Contains(typeof(IServiceModelContainer)))
                     {
-                        if (condition.TraverseServiceContainer(elementProperty, modelComponentContainer))
+                        if (condition.VisitServiceContainer(elementProperty, modelComponentContainer))
                         {
                             vis.VisitServiceContainer(elementProperty, modelComponentContainer);
+
+                        }
+                        else if (condition.TraverseServiceContainer(elementProperty, modelComponentContainer))
+                        {
                             PreOrder(modelcomponent, vis, condition);
                         }
+
                     }
                     else
                     {
-                        if (condition.TraverseContainerModelComponentContainer(elementProperty, modelComponentContainer))
+                        if (condition.VisitModelComponentContainer(elementProperty, modelComponentContainer))
                         {
                             vis.VisitModelComponentContainer(elementProperty, modelComponentContainer);
                             PreOrder(modelcomponent, vis, condition);
                         }
-                    }   
+                        else if (condition.TraverseModelComponentContainer(elementProperty, modelComponentContainer))
+                        {
+                            PreOrder(modelcomponent, vis, condition);
+                        }
+                    }
                 }
 
                 if (elementPropertyValueType.GetInterfaces().Contains(typeof(IModelComponentContainerCollection)) && elementPropertyValueType.IsGenericType)
                 {
-                    if(condition.TraverseModelComponentContainerCollection(elementProperty, elementPropertyValue as IModelComponentContainerCollection))
+                    if (condition.VisitModelComponentContainerCollection(elementProperty, elementPropertyValue as IModelComponentContainerCollection))
+                    {
+                        var collection = elementPropertyValue as IModelComponentContainerCollection;
+
+                        vis.VisitModelComponentContainerCollection(elementProperty, collection);
+                        TraverseModelCompontContainerCollection(elementProperty, elementPropertyValue, vis, condition);
+                    }
+                    else if (condition.TraverseModelComponentContainerCollection(elementProperty, elementPropertyValue as IModelComponentContainerCollection))
                     {
                         TraverseModelCompontContainerCollection(elementProperty, elementPropertyValue, vis, condition);
                     }
@@ -141,15 +157,26 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
                 if (elementPropertyValueType.GetInterfaces().Contains(typeof(IModelVariable)))
                 {
                     var modelcomponent = (ModelComponent)elementPropertyValue;
-                   ModelVariableBase modeVariabel = modelcomponent as ModelVariableBase;
+                    ModelVariableBase modeVariabel = modelcomponent as ModelVariableBase;
 
-                    vis.VisitModelVariable(elementProperty, modelcomponent as ModelVariableBase);
+                    if (condition.VisitModelVariable(elementProperty, modeVariabel))
+                    {
+                        vis.VisitModelVariable(elementProperty, modelcomponent as ModelVariableBase);
+                    }
+
                 }
 
                 if (elementPropertyValueType.GetInterfaces().Contains(typeof(IModelRPC)))
                 {
                     var modelcomponent = (ModelComponent)elementPropertyValue;
-                    vis.VisitModelRPC(elementProperty, modelcomponent as ModelRPCBase);
+                    var modelRPC = modelcomponent as ModelRPCBase;
+
+                    if (condition.VisitModelRPC(elementProperty, modelRPC))
+                    {
+                        vis.VisitModelRPC(elementProperty, modelRPC);
+                    }
+
+
                 }
             }
         }
@@ -194,30 +221,42 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
 
                     if (implementedInterfaces.Contains(typeof(IServiceModelContainer)))
                     {
-                        if (condition.TraverseServiceContainer(elementProperty, modelComponentContainer))
+                        if (condition.VisitServiceContainer(elementProperty, modelComponentContainer))
                         {
                             vis.VisitServiceContainer(elementProperty, modelComponentContainer);
                             PreOrder(modelcomponent, vis, condition);
                             vis.LeaveServiceContainer(elementProperty, modelComponentContainer);
                         }
+                        else if (condition.TraverseServiceContainer(elementProperty, modelComponentContainer))
+                        {
+                            PreOrder(modelcomponent, vis, condition);
+                        }
                     }
                     else
                     {
-                        if (condition.TraverseContainerModelComponentContainer(elementProperty, modelComponentContainer))
+                        if (condition.VisitModelComponentContainer(elementProperty, modelComponentContainer))
                         {
                             vis.VisitModelComponentContainer(elementProperty, modelComponentContainer);
                             PreOrder(modelcomponent, vis, condition);
                             vis.LeaveModelComponentContainer(elementProperty, modelComponentContainer);
+                        }
+                        else if (condition.TraverseModelComponentContainer(elementProperty, modelComponentContainer))
+                        {
+                            PreOrder(modelcomponent, vis, condition);
                         }
                     }
                 }
 
                 if (elementPropertyValueType.GetInterfaces().Contains(typeof(IModelComponentContainerCollection)) && elementPropertyValueType.IsGenericType)
                 {
-                    if (condition.TraverseModelComponentContainerCollection(elementProperty, elementPropertyValue as IModelComponentContainerCollection))
+                    if (condition.VisitModelComponentContainerCollection(elementProperty, elementPropertyValue as IModelComponentContainerCollection))
                     {
                         TraverseModelCompontContainerCollection(elementProperty, elementPropertyValue, vis, condition);
                         vis.LeaveModelComponentContainerCollection(elementProperty, elementPropertyValue as IModelComponentContainerCollection);
+                    }
+                    else if (condition.TraverseModelComponentContainerCollection(elementProperty, elementPropertyValue as IModelComponentContainerCollection))
+                    {
+                        TraverseModelCompontContainerCollection(elementProperty, elementPropertyValue, vis, condition);
                     }
                 }
 
@@ -226,56 +265,40 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
                     var modelcomponent = (ModelComponent)elementPropertyValue;
                     ModelVariableBase modeVariabel = modelcomponent as ModelVariableBase;
 
-                    vis.VisitModelVariable(elementProperty, modelcomponent as ModelVariableBase);
+                    if (condition.VisitModelVariable(elementProperty, modeVariabel))
+                    {
+                        vis.VisitModelVariable(elementProperty, modelcomponent as ModelVariableBase);
+                    }
+
                 }
 
                 if (elementPropertyValueType.GetInterfaces().Contains(typeof(IModelRPC)))
                 {
                     var modelcomponent = (ModelComponent)elementPropertyValue;
-                    vis.VisitModelRPC(elementProperty, modelcomponent as ModelRPCBase);
+                    var modelRPC = modelcomponent as ModelRPCBase;
+
+                    if (condition.VisitModelRPC(elementProperty, modelRPC))
+                    {
+                        vis.VisitModelRPC(elementProperty, modelRPC);
+                    }
+
+
                 }
             }
         }
-
-        private void VisitRootNode(WrapObject rootNode, Visitor vis)
-        {
-            var elementType = rootNode.GetType();
-            var elementProperties = elementType.GetProperties();
-
-                var elementProperty = elementProperties[0];
-                var elementPropertyValueType = rootNode.Element.GetType();
-
-                var implementedInterfaces = elementPropertyValueType.GetInterfaces();
-                
-                if (elementPropertyValueType.GetInterfaces().Contains(typeof(IModelComponentContainer)))
-                {
-                    var modelcomponent = (ModelComponent)rootNode.Element;
-                    ModelComponentContainer modelComponentContainer = modelcomponent as ModelComponentContainer;
-
-                    if (implementedInterfaces.Contains(typeof(IServiceModelContainer)))
-                    {
-                        vis.VisitServiceContainer(elementProperty, modelComponentContainer);
-                    }
-                    else
-                    {
-                        vis.VisitModelComponentContainer(elementProperty, modelComponentContainer);
-                    }
-                }
-        }
-
 
         private object GetPropertyValue(object parentElement, PropertyInfo elementProperty, object[] index = null)
         {
             object elementPropertyValue = null;
             try
             {
-                 elementPropertyValue = elementProperty.GetValue(parentElement, index);
-                 if (elementPropertyValue != null)
+                elementPropertyValue = elementProperty.GetValue(parentElement, index);
+                if (elementPropertyValue != null)
                     return elementPropertyValue;
-                 else
+                else
                     return TryActivateValue(parentElement, elementProperty);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return TryActivateValue(parentElement, elementProperty);
             }
@@ -301,9 +324,6 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
 
         private bool isRelatedType(PropertyInfo elementType)
         {
-            if (elementType.Name == "ParentModelContainer")
-                return false;
-
             var typeInterfaces = elementType.PropertyType.GetInterfaces();
             var IsModelComponentContainer = typeInterfaces.Contains(typeof(IModelComponentContainer));
             var IsModelVariable = typeInterfaces.Contains(typeof(IModelVariable));
@@ -316,11 +336,9 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
         {
             var collection = elementValue as IModelComponentContainerCollection;
 
-            vis.VisitModelComponentContainerCollection(elementProperty, collection);
-
             // Resolve "Count" prop of the collection
             int collectionCount = collection.Count;
-  
+
             for (int collectionIndex = 0; collectionIndex < collectionCount; collectionIndex++)
             {
                 // Get the collection item
@@ -331,8 +349,16 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
 
                 if (collectionItemType.GetInterfaces().Contains(typeof(IModelComponentContainer)))
                 {
-                    vis.VisitModelComponentContainerCollectionItem(collectionItemProperty, collectionItem as ModelComponentContainer, collectionIndex);
-                    PreOrder(collectionItem, vis, condition);
+                    if (condition.VisitModelComponentContainerCollectionItem(collectionItemProperty, collectionItem as ModelComponentContainer, collectionIndex))
+                    {
+                        vis.VisitModelComponentContainerCollectionItem(collectionItemProperty, collectionItem as ModelComponentContainer, collectionIndex);
+                        PreOrder(collectionItem, vis, condition);
+                    }
+                    else if (condition.TraverseModelComponentContainerCollectionItem(collectionItemProperty, collectionItem as ModelComponentContainer, collectionIndex))
+                    {
+                        PreOrder(collectionItem, vis, condition);
+                    }
+
                 }
             }
         }
@@ -349,16 +375,24 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
             for (int collectionIndex = 0; collectionIndex < collectionCount; collectionIndex++)
             {
                 // Get the collection item
-                
+
                 object[] index = { collectionIndex };
                 object collectionItem = elementProperty.PropertyType.GetProperty("Item").GetValue(elementValue, index);
                 var collectionItemType = collectionItem.GetType();
 
                 if (collectionItemType.GetInterfaces().Contains(typeof(IModelComponentContainer)))
                 {
-                    vis.VisitModelComponentContainerCollectionItem(collectionItemProperty, collectionItem as ModelComponentContainer, collectionIndex);
-                    PreOrder(collectionItem, vis, condition);
-                    vis.LeaveModelComponentContainerCollectionItem(collectionItemProperty, collectionItem as ModelComponentContainer, collectionIndex);
+                    var modelContainer = collectionItem as ModelComponentContainer;
+                    if (condition.VisitModelComponentContainerCollectionItem(elementProperty, modelContainer, collectionIndex))
+                    {
+                        vis.VisitModelComponentContainerCollectionItem(collectionItemProperty, modelContainer, collectionIndex);
+                        PreOrder(collectionItem, vis, condition);
+                        vis.LeaveModelComponentContainerCollectionItem(collectionItemProperty, modelContainer, collectionIndex);
+                    }
+                    else if(condition.TraverseModelComponentContainerCollectionItem(elementProperty, modelContainer, collectionIndex))
+                    {
+                        PreOrder(collectionItem, vis, condition);
+                    }
                 }
             }
 
@@ -382,12 +416,52 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
             return true;
         }
 
+        public bool TraverseModelComponentContainer(PropertyInfo elementProperty, ModelComponentContainer container)
+        {
+            return true;
+        }
+
         public bool TraverseModelComponentContainerCollection(PropertyInfo elementProperty, IModelComponentContainerCollection variable)
         {
             return true;
         }
 
+        public bool TraverseModelComponentContainerCollectionItem(PropertyInfo elementProperty, ModelComponentContainer item, int index)
+        {
+            return true;
+        }
+
         public bool TraverseServiceContainer(PropertyInfo elementProperty, ModelComponentContainer container)
+        {
+            return true;
+        }
+
+        public bool VisitModelComponentContainer(PropertyInfo elementProperty, ModelComponentContainer container)
+        {
+            return true;
+        }
+
+        public bool VisitModelComponentContainerCollection(PropertyInfo elementProperty, IModelComponentContainerCollection variable)
+        {
+            return true;
+        }
+
+        public bool VisitModelComponentContainerCollectionItem(PropertyInfo elementProperty, ModelComponentContainer item, int index)
+        {
+            return true;
+        }
+
+        public bool VisitModelRPC(PropertyInfo elementProperty, ModelRPCBase rpc)
+        {
+            return true;
+        }
+
+        public bool VisitModelVariable(PropertyInfo elementProperty, ModelVariableBase variable)
+        {
+            return true;
+        }
+
+        public bool VisitServiceContainer(PropertyInfo elementProperty, ModelComponentContainer container)
         {
             return true;
         }
