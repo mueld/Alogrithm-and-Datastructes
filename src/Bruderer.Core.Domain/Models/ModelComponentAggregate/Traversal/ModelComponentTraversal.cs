@@ -324,6 +324,11 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
 
         private bool isRelatedType(PropertyInfo elementType)
         {
+            if(elementType.Name.Equals("ParentModelContainer"))
+            {
+                return false;
+            }
+
             var typeInterfaces = elementType.PropertyType.GetInterfaces();
             var IsModelComponentContainer = typeInterfaces.Contains(typeof(IModelComponentContainer));
             var IsModelVariable = typeInterfaces.Contains(typeof(IModelVariable));
