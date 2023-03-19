@@ -1,1 +1,2 @@
-# Attempt to implment the visitor pattern for a complex tree model.
+#Vistor pattern
+Attempt to implment the visitor pattern for a complex tree model.
