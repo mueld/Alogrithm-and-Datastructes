@@ -1,2 +1,3 @@
-# Vistor pattern
-Attempt to implment the visitor pattern for a complex tree model.
+# ADS-Attempts
+
+This repo serves as a test model for implementing various knowledge from the lectures Alogrithm and Datastructes from the computer science course.
