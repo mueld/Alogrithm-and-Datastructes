@@ -1,4 +1,5 @@
-﻿using Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal;
+﻿using Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Handler;
+using Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal;
 using Bruderer.Core.Domain.Models.ModelComponentContainerAggregate;
 using Bruderer.Core.Domain.Models.ModelRPCAggregate;
 using Bruderer.Core.Domain.Models.ModelVariableAggregate;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Helpers
 {
-    public class ModelComponentRelationshipResolver : RecursiveVistor
+    public class ModelComponentRelationshipResolver : RecursiveModelScannerHandler
     {
 
         private ModelComponentContainer _ParentModelContainer;

@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2
+namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Handler
 {
-    public interface IModelScannerHandler: IVisitor
+    public interface IModelScannerHandler : IVisitor
     {
         void setNextHandler(IModelScannerHandler nextHandler);
     }

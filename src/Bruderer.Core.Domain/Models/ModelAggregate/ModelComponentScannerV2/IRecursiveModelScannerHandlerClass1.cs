@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2
 {
-    public interface IRecursiveModelScannerHandler: IRecursiveVisitor
+    public interface IRecursiveModelScannerHandlerClass: IRecursiveVisitor
     {
-        public void SetNextHandler(IRecursiveModelScannerHandler handler);
     }
 }

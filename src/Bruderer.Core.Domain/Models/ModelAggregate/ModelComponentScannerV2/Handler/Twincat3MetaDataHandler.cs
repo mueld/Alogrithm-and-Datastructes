@@ -1,5 +1,6 @@
 ﻿using Bruderer.Core.Domain.Attributes.Resolver;
 using Bruderer.Core.Domain.Constants;
+using Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Handler;
 using Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal;
 using Bruderer.Core.Domain.Models.ModelComponentContainerAggregate;
 using Bruderer.Core.Domain.Models.ModelRPCAggregate;
@@ -14,18 +15,18 @@ using System.Threading.Tasks;
 
 namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Helpers
 {
-    public class Twincat3MetaDataBuilder : RecursiveVistor
+    public class Twincat3MetaDataHandler : RecursiveModelScannerHandler
     {
         private TC3MetaData _CurrentMetaData;
         private Stack<TC3MetaData> _MetaDataStack;
         private string collectionName = string.Empty;
-        public Twincat3MetaDataBuilder()
+        public Twincat3MetaDataHandler()
         {
             _CurrentMetaData = new TC3MetaData();
             _MetaDataStack = new Stack<TC3MetaData>();
             _MetaDataStack.Push(_CurrentMetaData);
         }
-        public Twincat3MetaDataBuilder(ModelComponentContainer rootNode)
+        public Twincat3MetaDataHandler(ModelComponentContainer rootNode)
         {
             _CurrentMetaData = new TC3MetaData();
             _MetaDataStack = new Stack<TC3MetaData>();

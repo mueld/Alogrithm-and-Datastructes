@@ -1,4 +1,5 @@
-﻿using Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal;
+﻿using Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Handler;
+using Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal;
 using Bruderer.Core.Domain.Models.ModelComponentContainerAggregate;
 using Bruderer.Core.Domain.Models.ModelRPCAggregate;
 using Bruderer.Core.Domain.Models.ModelVariableAggregate;
@@ -8,7 +9,7 @@ using System.Reflection;
 
 namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Helpers
 {
-    public class ModelComponetValueDistribution : Visitor
+    public class ModelComponetValueDistribution : RecursiveModelScannerHandler
     {
         private Queue<IModelVariable> _ModelVariablesToDistribute;
         private int _ProccessingIndex;
@@ -24,6 +25,27 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
             _ModelVariablesToDistribute = new Queue<IModelVariable>(modelVariablesToDistribute);
             _NextModelVariable= _ModelVariablesToDistribute.Dequeue();
         }
+
+        public override void LeaveModelComponentContainer(PropertyInfo elementProperty, ModelComponentContainer modelComponentContainer)
+        {
+           
+        }
+
+        public override void LeaveModelComponentContainerCollection(PropertyInfo elementProperty, IModelComponentContainerCollection variable)
+        {
+            ;
+        }
+
+        public override void LeaveModelComponentContainerCollectionItem(PropertyInfo elementProperty, ModelComponentContainer modelContainer, int index)
+        {
+        
+        }
+
+        public override void LeaveServiceContainer(PropertyInfo elementProperty, ModelComponentContainer serviceContainer)
+        {
+          
+        }
+
         public override void VisitModelComponentContainer(PropertyInfo elementProperty, ModelComponentContainer modelComponentContainer)
         {
             

@@ -15,7 +15,7 @@ using System.Reflection;
 
 namespace Bruderer.Core.Domain.Models.ModelAggregate
 {
-    public class ModelComponentScannerV2: IModelScanner
+    public class ModelComponentScannerNew: 
     {
         #region fields
 
@@ -25,7 +25,7 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate
 
         #region ctor
 
-        public ModelComponentScannerV2()
+        public ModelComponentScannerNew()
         {
 
         }

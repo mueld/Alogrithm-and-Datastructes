@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Helpers
 {
-    public class ModelKeysResolver : RecursiveVistor
+    public class ModelKeysResolver : RecursiveModelScannerHandler
     {
         private Stack<ModelScanningKeys> modelkeys = new Stack<ModelScanningKeys>();
         private ModelScanningKeys currentKeys = new ModelScanningKeys();
