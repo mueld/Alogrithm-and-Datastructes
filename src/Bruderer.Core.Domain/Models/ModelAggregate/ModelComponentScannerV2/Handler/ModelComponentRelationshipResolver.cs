@@ -47,49 +47,59 @@ namespace Bruderer.Core.Domain.Models.ModelAggregate.ModelComponentScannerV2.Hel
 
         public override void VisitModelComponentContainerCollection(PropertyInfo elementProperty, IModelComponentContainerCollection collection)
         {
-            
+            EnumerableModelContainers.Add(collection);
         }
 
-        public override void VisitModelComponentContainerCollectionItem(PropertyInfo elementProperty, ModelComponentContainer serviceContainer, int index)
+        public override void VisitModelComponentContainerCollectionItem(PropertyInfo elementProperty, ModelComponentContainer collectionItem, int index)
         {
-            throw new NotImplementedException();
+            collectionItem.ParentModelContainer = _ParentModelContainer;
+            _ParentModelContainer.ModelContainers.Add(collectionItem);
+
+            _ParentModelContainer = collectionItem;
+            _Stack.Push(collectionItem);
         }
 
         public override void VisitModelRPC(PropertyInfo elementProperty, ModelRPCBase rpc)
         {
-            throw new NotImplementedException();
+            _ParentModelContainer.ModelRPCs.Add(rpc);
+            RPCs.Add(rpc as IModelRPC);
         }
 
         public override void VisitModelVariable(PropertyInfo elementProperty, ModelVariableBase variable)
         {
-            throw new NotImplementedException();
+            _ParentModelContainer.ModelVariables.Add(variable);
+            Variables.Add(variable as IModelVariable);
         }
 
         public override void VisitServiceContainer(PropertyInfo elementProperty, ModelComponentContainer serviceContainer)
         {
-            throw new NotImplementedException();
+            _ParentModelContainer.ModelContainers.Add(serviceContainer);
+            serviceContainer.ParentModelContainer = _ParentModelContainer;
+            _ParentModelContainer = serviceContainer;
+            _Stack.Push(serviceContainer);
         }
 
         public override void LeaveModelComponentContainer(PropertyInfo elementProperty, ModelComponentContainer modelComponentContainer)
         {
-            throw new NotImplementedException();
+            _Stack.Pop();
+            _ParentModelContainer = _Stack.Peek();
         }
 
         public override void LeaveModelComponentContainerCollection(PropertyInfo elementProperty, IModelComponentContainerCollection variable)
         {
-            throw new NotImplementedException();
         }
 
         public override void LeaveModelComponentContainerCollectionItem(PropertyInfo elementProperty, ModelComponentContainer modelContainer, int index)
         {
-            throw new NotImplementedException();
+            _Stack.Pop();
+            _ParentModelContainer = _Stack.Peek();
         }
 
         public override void LeaveServiceContainer(PropertyInfo elementProperty, ModelComponentContainer serviceContainer)
         {
-            throw new NotImplementedException();
+            _Stack.Pop();
+            _ParentModelContainer = _Stack.Peek();
         }
-
 
         public ModelComponentContainer ModelComponentTree { get; private set; } 
 
