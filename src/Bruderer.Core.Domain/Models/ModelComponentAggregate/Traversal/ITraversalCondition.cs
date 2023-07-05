@@ -23,6 +23,8 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
         /// </returns>
         bool VisitModelComponentContainer(PropertyInfo elementProperty, ModelComponentContainer container);
 
+        void LeaveModelComponentContainer(PropertyInfo elementProperty, ModelComponentContainer container);
+
         /// <summary>
         /// Determines whether the container should be traversed. 
         /// </summary>
@@ -38,15 +40,16 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
         /// <returns>
         /// True if container collection should be traversed, false otherwise .
         /// </returns>
-        bool VisitModelComponentContainerCollection(PropertyInfo elementProperty, IModelComponentContainerCollection variable);
+        bool VisitModelComponentContainerCollection(PropertyInfo elementProperty, IModelComponentContainerCollection collection);
 
+        void LeaveModelComponentContainerCollection(PropertyInfo elementProperty, IModelComponentContainerCollection collection);
         /// <summary>
         /// Determines whether the container collection should be traversed. 
         /// </summary>
         /// <returns>
         /// True if container collection should be traversed, false otherwise .
         /// </returns>
-        bool TraverseModelComponentContainerCollection(PropertyInfo elementProperty, IModelComponentContainerCollection variable);
+        bool TraverseModelComponentContainerCollection(PropertyInfo elementProperty, IModelComponentContainerCollection collection);
 
         /// <summary>
         /// Determines whether the container collection should be visited. if further traversing is needed wihtout visit explicit container, to find a specific container in the root subtree. 
@@ -56,7 +59,7 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
         /// True if container collection should be traversed, false otherwise .
         /// </returns>
         bool VisitModelComponentContainerCollectionItem(PropertyInfo elementProperty, ModelComponentContainer item, int index);
-
+        void LeaveModelComponentContainerCollectionItem(PropertyInfo elementProperty, ModelComponentContainer item, int index);
         /// <summary>
         /// Determines whether the container collection should be traversed. 
         /// </summary>
@@ -73,6 +76,7 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
         /// True if service container should be visited, false otherwise .
         /// </returns>
         bool VisitServiceContainer(PropertyInfo elementProperty, ModelComponentContainer container);
+        void LeaveServiceContainer(PropertyInfo elementProperty, ModelComponentContainer container);
 
         /// <summary>
         /// Determines whether the service container should be traversed. 

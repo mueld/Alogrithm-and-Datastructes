@@ -226,6 +226,7 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
                             vis.VisitServiceContainer(elementProperty, modelComponentContainer);
                             PreOrder(modelcomponent, vis, condition);
                             vis.LeaveServiceContainer(elementProperty, modelComponentContainer);
+                            condition.LeaveServiceContainer(elementProperty, modelComponentContainer);
                         }
                         else if (condition.TraverseServiceContainer(elementProperty, modelComponentContainer))
                         {
@@ -239,6 +240,7 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
                             vis.VisitModelComponentContainer(elementProperty, modelComponentContainer);
                             PreOrder(modelcomponent, vis, condition);
                             vis.LeaveModelComponentContainer(elementProperty, modelComponentContainer);
+                            condition.LeaveModelComponentContainer(elementProperty, modelComponentContainer)
                         }
                         else if (condition.TraverseModelComponentContainer(elementProperty, modelComponentContainer))
                         {
@@ -249,12 +251,14 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
 
                 if (elementPropertyValueType.GetInterfaces().Contains(typeof(IModelComponentContainerCollection)) && elementPropertyValueType.IsGenericType)
                 {
-                    if (condition.VisitModelComponentContainerCollection(elementProperty, elementPropertyValue as IModelComponentContainerCollection))
+                    var collection = elementPropertyValue as IModelComponentContainerCollection;
+                    if (condition.VisitModelComponentContainerCollection(elementProperty, collection))
                     {
                         TraverseModelCompontContainerCollection(elementProperty, elementPropertyValue, vis, condition);
-                        vis.LeaveModelComponentContainerCollection(elementProperty, elementPropertyValue as IModelComponentContainerCollection);
+                        vis.LeaveModelComponentContainerCollection(elementProperty, collection);
+                        condition.LeaveModelComponentContainerCollection(elementProperty, collection);
                     }
-                    else if (condition.TraverseModelComponentContainerCollection(elementProperty, elementPropertyValue as IModelComponentContainerCollection))
+                    else if (condition.TraverseModelComponentContainerCollection(elementProperty, collection))
                     {
                         TraverseModelCompontContainerCollection(elementProperty, elementPropertyValue, vis, condition);
                     }
@@ -267,7 +271,7 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
 
                     if (condition.VisitModelVariable(elementProperty, modeVariabel))
                     {
-                        vis.VisitModelVariable(elementProperty, modelcomponent as ModelVariableBase);
+                        vis.VisitModelVariable(elementProperty, modeVariabel);
                     }
 
                 }
@@ -393,6 +397,7 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
                         vis.VisitModelComponentContainerCollectionItem(collectionItemProperty, modelContainer, collectionIndex);
                         PreOrder(collectionItem, vis, condition);
                         vis.LeaveModelComponentContainerCollectionItem(collectionItemProperty, modelContainer, collectionIndex);
+                        condition.LeaveModelComponentContainerCollectionItem(collectionItemProperty, modelContainer, collectionIndex);
                     }
                     else if(condition.TraverseModelComponentContainerCollectionItem(elementProperty, modelContainer, collectionIndex))
                     {
@@ -416,6 +421,26 @@ namespace Bruderer.Core.Domain.Models.ModelComponentAggregate.Traversal
     }
     internal class ProxyTraversalCondition : ITraversalCondition
     {
+        public void LeaveModelComponentContainer(PropertyInfo elementProperty, ModelComponentContainer container)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void LeaveModelComponentContainerCollection(PropertyInfo elementProperty, IModelComponentContainerCollection collection)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void LeaveModelComponentContainerCollectionItem(PropertyInfo elementProperty, ModelComponentContainer item, int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void LeaveServiceContainer(PropertyInfo elementProperty, ModelComponentContainer container)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool TraverseContainerModelComponentContainer(PropertyInfo elementProperty, ModelComponentContainer container)
         {
             return true;
